@@ -1,0 +1,3 @@
+# Database
+psycopg2-binary   # connect Python to Postgres (Neon)
+python-dotenv     # read keys from the .env file
