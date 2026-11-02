@@ -1,0 +1,61 @@
+vehicle_id,customer_id,make,model,segment,year,fuel,registration_number
+VEH-0001,CUST-0001,Hyundai,Creta,suv,2022,Petrol,TS09AJ5012
+VEH-0002,CUST-0002,Maruti Suzuki,Swift,hatchback,2021,Petrol,TS09TW1434
+VEH-0003,CUST-0003,Toyota,Innova Crysta,suv,2025,Diesel,TS09JE4527
+VEH-0004,CUST-0004,Maruti Suzuki,Baleno,hatchback,2025,Petrol,MH12UK6925
+VEH-0005,CUST-0005,Honda,City,sedan,2026,Diesel,TS08FM6820
+VEH-0006,CUST-0006,Hyundai,Creta,suv,2025,Diesel,TS03XZ4598
+VEH-0007,CUST-0007,Toyota,Innova Crysta,suv,2024,Petrol,AP16XS7482
+VEH-0008,CUST-0008,Tata,Tiago,hatchback,2021,Petrol + CNG (factory fitted),TN09CB2796
+VEH-0009,CUST-0009,Honda,City,sedan,2019,Petrol,MH12YU5371
+VEH-0010,CUST-0010,Maruti Suzuki,Baleno,hatchback,2023,Petrol,TS10EM3646
+VEH-0011,CUST-0011,Maruti Suzuki,Swift,hatchback,2020,Diesel,KA01KH1949
+VEH-0012,CUST-0012,Mahindra,Scorpio-N,suv,2021,Petrol,MH12YS3705
+VEH-0013,CUST-0013,Mahindra,XUV700,suv,2024,Petrol + CNG (factory fitted),TN09TR2982
+VEH-0014,CUST-0014,Maruti Suzuki,Swift,hatchback,2022,Petrol,TS08BL2160
+VEH-0015,CUST-0015,Mahindra,Scorpio-N,suv,2026,Petrol + CNG (factory fitted),MH12GD2588
+VEH-0016,CUST-0016,Mahindra,Scorpio-N,suv,2020,Petrol,TN09GG9786
+VEH-0017,CUST-0017,Mahindra,XUV700,suv,2019,Petrol,TS08HF7658
+VEH-0018,CUST-0018,Honda,City,sedan,2026,Diesel,TS09PZ8973
+VEH-0019,CUST-0019,Tata,Nexon,suv,2026,Petrol,TS09BT2312
+VEH-0020,CUST-0020,Maruti Suzuki,Baleno,hatchback,2025,Diesel,TS09JG6147
+VEH-0021,CUST-0021,Tata,Nexon,suv,2020,Petrol,MH12UG9288
+VEH-0022,CUST-0022,Hyundai,Creta,suv,2023,Petrol,AP16YU5905
+VEH-0023,CUST-0023,Toyota,Innova Crysta,suv,2021,Diesel,TS08KW4450
+VEH-0024,CUST-0024,Maruti Suzuki,Swift,hatchback,2019,Diesel,TN09EX5291
+VEH-0025,CUST-0025,Kia,Seltos,suv,2019,Diesel,TS08VU3426
+VEH-0026,CUST-0026,Tata,Tiago,hatchback,2020,Diesel,TS03UP3532
+VEH-0027,CUST-0027,Toyota,Innova Crysta,suv,2024,Petrol + CNG (factory fitted),TS09YH5371
+VEH-0028,CUST-0028,Honda,City,sedan,2022,Petrol,MH12AY4164
+VEH-0029,CUST-0029,Maruti Suzuki,Baleno,hatchback,2023,Petrol,KA01VJ1626
+VEH-0030,CUST-0030,Tata,Tiago,hatchback,2023,Petrol,TN09ZP1027
+VEH-0031,CUST-0031,Maruti Suzuki,Baleno,hatchback,2024,Diesel,KA01YD5920
+VEH-0032,CUST-0032,Maruti Suzuki,Dzire,sedan,2021,Diesel,TN09NU1006
+VEH-0033,CUST-0033,Tata,Tiago,hatchback,2026,Petrol,MH12YC5649
+VEH-0034,CUST-0034,Hyundai,i20,hatchback,2019,Petrol,TS03HS2193
+VEH-0035,CUST-0035,Hyundai,i20,hatchback,2019,Petrol,TN09PH3881
+VEH-0036,CUST-0036,Mahindra,XUV700,suv,2024,Petrol + CNG (factory fitted),TS10WT7991
+VEH-0037,CUST-0037,Tata,Tiago,hatchback,2023,Petrol + CNG (factory fitted),MH12CZ5681
+VEH-0038,CUST-0038,Maruti Suzuki,Baleno,hatchback,2025,Petrol + CNG (factory fitted),TS10LU8633
+VEH-0039,CUST-0039,Maruti Suzuki,Swift,hatchback,2024,Diesel,TN09NP9818
+VEH-0040,CUST-0040,Mahindra,XUV700,suv,2025,Petrol,TN09RE9751
+VEH-0041,CUST-0041,Mahindra,XUV700,suv,2025,Petrol,TS09RF1823
+VEH-0042,CUST-0042,Maruti Suzuki,Baleno,hatchback,2026,Petrol,TN09UB6733
+VEH-0043,CUST-0043,Hyundai,i20,hatchback,2022,Petrol,TS09SY2874
+VEH-0044,CUST-0044,Tata,Nexon,suv,2020,Petrol,KA01KD1420
+VEH-0045,CUST-0045,Toyota,Innova Crysta,suv,2023,Petrol,TS03VB6688
+VEH-0046,CUST-0046,Hyundai,Verna,sedan,2026,Petrol,TS08PF9548
+VEH-0047,CUST-0047,Maruti Suzuki,Baleno,hatchback,2023,Petrol + CNG (factory fitted),KA01HR7209
+VEH-0048,CUST-0048,Toyota,Innova Crysta,suv,2023,Petrol,AP16TG2402
+VEH-0049,CUST-0049,Honda,City,sedan,2022,Petrol + CNG (factory fitted),TS09ZH6016
+VEH-0050,CUST-0050,Honda,City,sedan,2023,Petrol,MH12DG6169
+VEH-0051,CUST-0051,Tata,Tiago,hatchback,2023,Petrol,AP16MF5952
+VEH-0052,CUST-0052,Maruti Suzuki,Swift,hatchback,2023,Petrol + CNG (factory fitted),MH12SR6582
+VEH-0053,CUST-0053,Maruti Suzuki,Dzire,sedan,2026,Petrol,TS08VX1878
+VEH-0054,CUST-0054,Tata,Nexon,suv,2022,Petrol + CNG (factory fitted),TN09RR5871
+VEH-0055,CUST-0055,Maruti Suzuki,Baleno,hatchback,2021,Petrol,AP16FU2229
+VEH-0056,CUST-0056,Maruti Suzuki,Baleno,hatchback,2022,Diesel,AP16XV4241
+VEH-0057,CUST-0057,Mahindra,Scorpio-N,suv,2023,Diesel,TS09RD8679
+VEH-0058,CUST-0058,Toyota,Innova Crysta,suv,2024,Diesel,TS09AC4750
+VEH-0059,CUST-0059,Hyundai,Creta,suv,2026,Diesel,TS09FV8141
+VEH-0060,CUST-0060,Hyundai,Verna,sedan,2020,Petrol,TN09LP9117

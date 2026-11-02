@@ -1,0 +1,7 @@
+claim_type,covered_under,max_payout,deductible,required_documents,key_exclusions,clause_ref
+collision,Comprehensive,300000,2000,claim form; RC; driving licence; photos; repair estimate,drunk driving; no valid licence; racing or commercial use,Section 3.1
+theft,Comprehensive,500000,0,claim form; RC; FIR within 24 hours; both keys; non-traceable certificate for total theft,keys left in vehicle; vehicle left unlocked; FIR not filed,Section 3.2
+flood,Comprehensive,250000,5000,claim form; RC; photos; repair estimate,engine damage from water ingression without Engine Protect add-on,Section 3.3
+fire,Comprehensive,400000,2000,claim form; RC; photos; fire brigade report if attended,fire from CNG/LPG kit not endorsed on the policy,Section 3.4
+vandalism,Comprehensive,100000,2000,claim form; RC; photos; police complaint,no police complaint filed,Section 3.5
+glass_only,Comprehensive,30000,0,claim form; RC; photos,wear and tear or scratches on glass,Section 3.6
