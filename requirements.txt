@@ -1,3 +1,12 @@
 # Database
 psycopg2-binary   # connect Python to Postgres (Neon)
 python-dotenv     # read keys from the .env file
+
+# Claim classifier (install torch first with the CPU command in the README)
+torch             # runs the model
+transformers      # MuRIL model and tokenizer
+peft              # loads our LoRA adapter
+
+# Agent
+langchain-openai  # LangChain wrapper for OpenAI chat models and embeddings
+pinecone          # vector database client (policy rule search)
