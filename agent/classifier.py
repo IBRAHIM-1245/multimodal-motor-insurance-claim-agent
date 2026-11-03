@@ -42,6 +42,11 @@ def predict_with_model(text):
     return LABELS[best], round(float(probs[best]), 3)
 
 
+# Warm-up: the first prediction on CPU is slow (~20 s), so do it once at server start,
+# not when the first customer is waiting. Found with Langfuse tracing.
+predict_with_model("warm up")
+
+
 # ---------- GPT fallback ----------
 class ClaimType(BaseModel):
     """The structured answer we want back from GPT."""

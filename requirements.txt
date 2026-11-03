@@ -15,3 +15,6 @@ pinecone          # vector database client (policy rule search)
 # API
 fastapi           # web API framework for the agent service
 uvicorn           # server that runs the FastAPI app
+
+# Monitoring
+langfuse          # traces every agent step, LLM call, tokens and cost
