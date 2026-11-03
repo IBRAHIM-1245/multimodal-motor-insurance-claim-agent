@@ -1,0 +1,3 @@
+model,english_acc,hinglish_acc,all_hard_acc,ms_per_claim,usd_per_1000_claims
+MuRIL + LoRA (fine-tuned),0.853,0.643,0.792,13.8,0.0
+GPT-4o-mini (zero-shot),1.0,1.0,1.0,697.6,0.0216

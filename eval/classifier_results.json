@@ -1,0 +1,55 @@
+{
+  "version": "v2",
+  "base_model": "google/muril-base-cased",
+  "languages": [
+    "en",
+    "hinglish"
+  ],
+  "lora": {
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0.1,
+    "target_modules": [
+      "query",
+      "value"
+    ]
+  },
+  "training": {
+    "epochs": 30,
+    "learning_rate": 0.0005,
+    "train_rows": 336,
+    "val_rows": 42,
+    "test_rows": 42,
+    "train_minutes": 3.17,
+    "device": "cuda"
+  },
+  "test_set": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0
+  },
+  "english_hard_set": {
+    "rows": 36,
+    "accuracy": 0.861,
+    "macro_f1": 0.856
+  },
+  "hinglish_hard_set": {
+    "rows": 12,
+    "accuracy": 0.583,
+    "macro_f1": 0.533
+  },
+  "fine_tuned_ms_per_claim": 13.8,
+  "gpt_4o_mini": {
+    "all_hard_accuracy": 1.0,
+    "english_accuracy": 1.0,
+    "hinglish_accuracy": 1.0,
+    "ms_per_claim": 697.6,
+    "total_cost_usd": 0.00104
+  },
+  "adapter_size_mb": 7.62,
+  "v1_baseline": {
+    "base_model": "distilbert-base-uncased",
+    "test_accuracy": 0.967,
+    "english_hard_accuracy": 0.861,
+    "note": "English only; failed on Hinglish words (gaadi, paani) and unusual stolen parts"
+  }
+}

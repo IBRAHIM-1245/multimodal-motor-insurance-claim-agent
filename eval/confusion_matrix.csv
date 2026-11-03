@@ -1,0 +1,7 @@
+true,collision,fire,flood,glass_only,theft,vandalism
+collision,6,0,0,2,0,0
+fire,0,8,0,0,0,0
+flood,0,0,8,0,0,0
+glass_only,1,0,0,6,0,1
+theft,1,0,0,0,3,4
+vandalism,0,1,0,0,0,7

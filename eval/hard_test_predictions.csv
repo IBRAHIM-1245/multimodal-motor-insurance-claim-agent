@@ -1,0 +1,49 @@
+text,language,label,pred,confidence,gpt_pred
+"I was parking and gently touched the pillar. Small dent on the bumper, nothing serious.",en,collision,collision,0.267,collision
+"Scooter rider lost balance and fell on my car at the signal, left door dented.",en,collision,collision,0.269,collision
+Car slid off the ghat road and rolled into a ditch. Roof and both sides damaged.,en,collision,collision,0.276,collision
+"Hit a speed breaker too fast, the oil sump cracked and front bumper scraped the road.",en,collision,collision,0.286,collision
+A reversing tipper truck backed into my parked car. Boot and tail lights broken.,en,collision,collision,0.284,collision
+"Accident on the flyover, my windshield also cracked but the main damage is the crushed front and bonnet.",en,collision,glass_only,0.222,collision
+Came back from my trip and the car was not in the parking lot. Security has no record.,en,theft,theft,0.193,theft
+My car's catalytic converter was cut out and taken in the night.,en,theft,vandalism,0.201,theft
+Somebody broke the window and took my laptop bag and the car stereo.,en,theft,vandalism,0.211,theft
+"Valet never returned my car after the wedding function, police are searching.",en,theft,theft,0.211,theft
+Number plates and the fog lamps were removed and taken from the car.,en,theft,vandalism,0.211,theft
+"Gaadi ghar ke bahar se gayab hai, CCTV mein do log dikh rahe hai.",hinglish,theft,theft,0.211,theft
+"After the storm, water stood in the parking for two days and the car smells and won't start.",en,flood,flood,0.282,flood
+I tried to cross a flooded causeway and the engine hydrolocked.,en,flood,flood,0.285,flood
+"Overflowing nala entered the basement, the car's floor and seats were wet up to the seat level.",en,flood,flood,0.284,flood
+"Cyclone rain filled the street, car was half submerged, ECU damaged.",en,flood,flood,0.284,flood
+"Water entered through the doors when I waited at a waterlogged signal, the electronics failed.",en,flood,flood,0.284,flood
+Paani mein gaadi band ho gayi underpass ke andar.,hinglish,flood,flood,0.27,flood
+"Burning smell, then flames from the dashboard while the AC was running.",en,fire,fire,0.298,fire
+Lightning struck near the car and the wiring burnt.,en,fire,fire,0.288,fire
+My car melted when the shop next to the parking caught fire.,en,fire,fire,0.297,fire
+"Engine overheated and caught fire on the highway, fire brigade attended.",en,fire,fire,0.296,fire
+Someone set my car on fire during the riots last night.,en,fire,fire,0.277,fire
+The battery terminals sparked and the bonnet area burnt.,en,fire,fire,0.297,fire
+Someone threw a stone at my windshield on purpose after an argument.,en,vandalism,vandalism,0.212,vandalism
+Found the word 'idiot' scratched on my bonnet this morning.,en,vandalism,vandalism,0.207,vandalism
+A group of men kicked the doors and broke the mirrors during a fight on the street.,en,vandalism,vandalism,0.212,vandalism
+All the tyres were deflated and cut with a knife overnight.,en,vandalism,vandalism,0.208,vandalism
+Somebody poured sugar into the fuel tank and damaged the paint with acid.,en,vandalism,vandalism,0.209,vandalism
+Protesters jumped on the roof of my car and dented it.,en,vandalism,vandalism,0.209,vandalism
+"Tiny crack in the windscreen from a stone, I want it replaced.",en,glass_only,glass_only,0.223,glass_only
+Sunroof glass shattered while driving on a bumpy road.,en,glass_only,glass_only,0.218,glass_only
+Rear glass broke when a coconut fell from a tree.,en,glass_only,glass_only,0.221,glass_only
+"Hailstorm cracked my front glass, there is no dent anywhere.",en,glass_only,glass_only,0.224,glass_only
+Door glass shattered on its own in the hot sun.,en,glass_only,collision,0.206,glass_only
+"A truck threw gravel, only the windscreen has small chips.",en,glass_only,glass_only,0.214,glass_only
+"Toll plaza ke paas ek tempo ne meri Creta ko side se ragad diya, mirror aur fender gaye.",hinglish,collision,glass_only,0.195,collision
+"Office ke bahar se meri Nexon gayab hai, guard ko kuch pata nahi.",hinglish,theft,vandalism,0.211,theft
+"Raat bhar baarish hui, subah car ke andar ghutne tak paani tha.",hinglish,flood,flood,0.283,flood
+Godown mein aag lagi aur wahan parked meri gaadi bhi pighal gayi.,hinglish,fire,fire,0.298,fire
+"Padosi ke bachchon ne jaan boojh ke meri car pe eent phenki, roof dent ho gayi.",hinglish,vandalism,fire,0.183,vandalism
+"Sirf windscreen pe crack hai, patthar laga tha, aur kuch nahi hua.",hinglish,glass_only,glass_only,0.223,glass_only
+"Gali mein mudte waqt meri car ek parked tempo se lag gayi, headlight phoot gayi.",hinglish,collision,collision,0.283,collision
+Shaadi ke function ke baad valet meri gaadi wapas leke hi nahi aaya.,hinglish,theft,collision,0.195,theft
+"Cyclone ke baad gali mein kamar tak paani tha, gaadi ka engine jam ho gaya.",hinglish,flood,flood,0.285,flood
+AC chalate waqt dashboard se jalne ki smell aayi aur phir aag nikalne lagi.,hinglish,fire,fire,0.298,fire
+Danga hua aur bheed ne lathiyon se meri gaadi tod di.,hinglish,vandalism,vandalism,0.211,vandalism
+Dhoop mein khadi car ka door wala sheesha apne aap chatak gaya.,hinglish,glass_only,vandalism,0.206,glass_only

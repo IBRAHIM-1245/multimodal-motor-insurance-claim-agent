@@ -1,0 +1,12 @@
+{
+  "labels": [
+    "collision",
+    "theft",
+    "flood",
+    "fire",
+    "vandalism",
+    "glass_only"
+  ],
+  "base_model": "google/muril-base-cased",
+  "max_length": 128
+}
