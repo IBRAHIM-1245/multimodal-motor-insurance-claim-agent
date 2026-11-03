@@ -8,8 +8,10 @@ from langchain_openai import ChatOpenAI
 from peft import PeftModel
 from pydantic import BaseModel
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from transformers import logging as hf_logging
 
-load_dotenv()   # reads OPENAI_API_KEY from .env
+load_dotenv()                  # reads OPENAI_API_KEY from .env
+hf_logging.set_verbosity_error()   # hide the long model 'LOAD REPORT' table
 
 MODEL_DIR = "models/claim_classifier_lora"
 CONFIDENCE_THRESHOLD = 0.23   # below this, ask GPT (chosen from the hard test set results)

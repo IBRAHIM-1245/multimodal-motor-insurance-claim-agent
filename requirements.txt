@@ -8,5 +8,10 @@ transformers      # MuRIL model and tokenizer
 peft              # loads our LoRA adapter
 
 # Agent
+langgraph         # builds the step-by-step claim agent (graph of nodes)
 langchain-openai  # LangChain wrapper for OpenAI chat models and embeddings
 pinecone          # vector database client (policy rule search)
+
+# API
+fastapi           # web API framework for the agent service
+uvicorn           # server that runs the FastAPI app
