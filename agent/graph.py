@@ -81,7 +81,8 @@ def classify(state):
 
 # ---------- Step 3: read policy, vehicle, claim history and the rule from Postgres ----------
 def run_query(sql, params):
-    with psycopg2.connect(os.getenv("DATABASE_URL")) as conn:
+    # AGENT_DATABASE_URL = read-only user: the agent can SELECT but never change data
+    with psycopg2.connect(os.getenv("AGENT_DATABASE_URL")) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(sql, params)
             return cur.fetchall()
