@@ -7,9 +7,9 @@ No real customer, policy or claim data is used (privacy and DPDP Act reasons).
 
 | File | Rows | Used for |
 |---|---|---|
-| `data/claims/claim_descriptions.csv` | 482 | Fine-tuning the classifier: 300 English + 182 Hindi / Telugu / Hinglish / Tenglish |
+| `data/claims/claim_descriptions.csv` | 420 | Fine-tuning the classifier: 300 English + 120 Hinglish (50 + 20 per claim type) |
 | `data/claims/hard_test_claims.csv` | 36 | Harder hand-written English test set (6 per type), never used in training |
-| `data/claims/hard_test_multilingual.csv` | 36 | Harder hand-written Hindi / Telugu / Hinglish / Tenglish test set, never used in training |
+| `data/claims/hard_test_hinglish.csv` | 12 | Harder hand-written Hinglish test set (2 per type), never used in training |
 | `data/claims/customers.csv` | 60 | Policyholders (fictional names, `@example.com` emails) |
 | `data/claims/vehicles.csv` | 60 | One vehicle per customer: make, model, segment, year, registration |
 | `data/claims/policies.csv` | 60 | Policy type, dates, status, IDV, add-ons |
@@ -20,17 +20,14 @@ No real customer, policy or claim data is used (privacy and DPDP Act reasons).
 
 ## Languages
 
-Most customers in India do not write claims in English, so the data covers five forms of writing:
+Many customers in India write in **Hinglish** (Hindi in English letters), so the data covers two forms:
 
 | Code | Language | Example |
 |---|---|---|
 | `en` | English | My car was stolen from the parking |
-| `hi` | Hindi (Devanagari script) | मेरी गाड़ी चोरी हो गई |
-| `te` | Telugu (Telugu script) | నా కారు దొంగిలించబడింది |
 | `hinglish` | Hindi in English letters | Meri gaadi chori ho gayi |
-| `tenglish` | Telugu in English letters | Na car dongatanam ayyindi |
 
-Customer replies are written in the customer's language using English letters; adjuster messages and the audit log are always in English.
+Customer replies follow the customer's language (English or Hinglish); adjuster messages and the audit log are always in English.
 
 ## Claim types (labels)
 
@@ -65,6 +62,6 @@ Customer replies are written in the customer's language using English letters; a
 ## Limits of this data
 - Descriptions follow a limited set of writing patterns, so scores on `claim_descriptions.csv` will be optimistic.
   `hard_test_claims.csv` is written differently to give a more honest score.
-- Hindi and Telugu rows are fewer (6-8 per claim type in each script); other Indian languages (Tamil, Kannada, Marathi...) are not covered yet.
+- Only English and Hinglish are covered. Hindi script, Telugu and other Indian languages are future work.
 - Real claims would include spelling mistakes, more regional languages and much longer stories.
   Before real use, the model must be tested and retrained on real, anonymised claims.
