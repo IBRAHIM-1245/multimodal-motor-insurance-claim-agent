@@ -222,3 +222,4 @@ __marimo__/
 # Project
 models/*
 !models/.gitkeep
+!models/claim_classifier_lora/
