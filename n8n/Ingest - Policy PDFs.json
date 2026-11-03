@@ -1,0 +1,273 @@
+{
+  "name": "Ingest - Policy PDFs",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "36bb3bd0-3afa-4bd2-8340-92c8eb0ed495",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The 4 ShaikSure policy PDFs, downloaded from the public GitHub repo\nconst base = \"https://raw.githubusercontent.com/IBRAHIM-1245/multimodal-motor-insurance-claim-agent/main/data/policy_docs/\";\nconst files = [\"shaiksure_policy_wording.pdf\", \"shaiksure_exclusions.pdf\",\n               \"shaiksure_claims_procedure.pdf\", \"shaiksure_addons.pdf\"];\nreturn files.map(name => ({ json: { source: name, url: base + name } }));"
+      },
+      "id": "19e93514-cb9a-4838-a3cd-4f2ce55dfead",
+      "name": "Policy PDF links",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "0629cd5e-6d28-43be-8468-5dfa74256d48",
+      "name": "Download PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "5e8af035-390f-4382-bbd6-89b8d09c72e7",
+      "name": "Extract PDF text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node: split each policy PDF's text into one item per clause (e.g. \"7.5 ...\")\nconst SECTIONS = {\n  1: \"Definitions\", 2: \"Scope of Cover\", 3: \"Limits and Deductibles by Claim Type\",\n  4: \"Depreciation on Parts\", 5: \"How the Claim Amount is Calculated\", 6: \"No Claim Bonus\",\n  7: \"General Exclusions\", 8: \"How to Make a Claim\", 9: \"Add-on Covers\",\n  10: \"Claim Review and Fraud Checks\",\n};\n\nconst output = [];\nconst links = $('Policy PDF links').all();   // same order as the downloaded PDFs\n$input.all().forEach((item, i) => {\n  // Put all text on one line, so it works whether the PDF text has line breaks or not\n  const text = item.json.text.replace(/\\s+/g, \" \");\n  const source = links[i].json.source;\n\n  // A clause starts with a number like 3.3 or 10.2, then a space, then a capital letter\n  const parts = text.split(/(?:^|\\s)(?=\\d{1,2}\\.\\d{1,2} [A-Z])/);\n\n  for (const part of parts) {\n    const match = part.match(/^(\\d{1,2})\\.(\\d{1,2}) /);\n    if (!match) continue;                       // skip the title and notes before the first clause\n    const clauseText = part.replace(/\\s*Section \\d{1,2} - [A-Za-z ,&-]+$/, \"\").trim();  // drop a next-section heading\n    output.push({ json: {\n      text: clauseText,\n      clause: match[1] + \".\" + match[2],\n      section: \"Section \" + match[1] + \" - \" + SECTIONS[match[1]],\n      source: source,\n    }});\n  }\n});\nreturn output;\n"
+      },
+      "id": "2a6b9960-99a3-4591-aca7-b4d6f36257fa",
+      "name": "Split into clauses",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "shaiksure-policies",
+          "mode": "list",
+          "cachedResultName": "shaiksure-policies"
+        },
+        "options": {
+          "clearNamespace": true,
+          "pineconeNamespace": "policies"
+        }
+      },
+      "id": "63042860-8201-4a88-93ad-b351a5f9aae5",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        0
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "Gz6Da9FOoHLxx61s",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "780e6c88-2464-471a-9255-3cbf542e3880",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        224
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "cqWLyZS0jiea5Ex9",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "clause",
+                "value": "={{ $json.clause }}"
+              },
+              {
+                "name": "section",
+                "value": "={{ $json.section }}"
+              },
+              {
+                "name": "source",
+                "value": "={{ $json.source }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "2ee5add7-39f8-4d67-a1e8-cb0a7d6941a5",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        432
+      ],
+      "id": "4d62b1b9-52d0-4743-af9d-c24c804e5059",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Policy PDF links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy PDF links": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF text": {
+      "main": [
+        [
+          {
+            "node": "Split into clauses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split into clauses": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "13090a7c-8f25-4e79-bff8-013b7fdc47a2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eebd74f076b8a42b2fa670b5e01023718a2751f462b21fb351b16d120b4c3415"
+  },
+  "nodeGroups": [],
+  "id": "ABbldzrlKS8w6ERP",
+  "tags": []
+}
