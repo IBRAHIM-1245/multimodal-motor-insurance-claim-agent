@@ -1,37 +1,37 @@
-text,label
-"I was parking and gently touched the pillar. Small dent on the bumper, nothing serious.",collision
-"Scooter rider lost balance and fell on my car at the signal, left door dented.",collision
-Car slid off the ghat road and rolled into a ditch. Roof and both sides damaged.,collision
-"Hit a speed breaker too fast, the oil sump cracked and front bumper scraped the road.",collision
-A reversing tipper truck backed into my parked car. Boot and tail lights broken.,collision
-"Accident on the flyover, my windshield also cracked but the main damage is the crushed front and bonnet.",collision
-Came back from my trip and the car was not in the parking lot. Security has no record.,theft
-My car's catalytic converter was cut out and taken in the night.,theft
-Somebody broke the window and took my laptop bag and the car stereo.,theft
-"Valet never returned my car after the wedding function, police are searching.",theft
-Number plates and the fog lamps were removed and taken from the car.,theft
-"Gaadi ghar ke bahar se gayab hai, CCTV mein do log dikh rahe hai.",theft
-"After the storm, water stood in the parking for two days and the car smells and won't start.",flood
-I tried to cross a flooded causeway and the engine hydrolocked.,flood
-"Overflowing nala entered the basement, the car's floor and seats were wet up to the seat level.",flood
-"Cyclone rain filled the street, car was half submerged, ECU damaged.",flood
-"Water entered through the doors when I waited at a waterlogged signal, the electronics failed.",flood
-Paani mein gaadi band ho gayi underpass ke andar.,flood
-"Burning smell, then flames from the dashboard while the AC was running.",fire
-Lightning struck near the car and the wiring burnt.,fire
-My car melted when the shop next to the parking caught fire.,fire
-"Engine overheated and caught fire on the highway, fire brigade attended.",fire
-Someone set my car on fire during the riots last night.,fire
-The battery terminals sparked and the bonnet area burnt.,fire
-Someone threw a stone at my windshield on purpose after an argument.,vandalism
-Found the word 'idiot' scratched on my bonnet this morning.,vandalism
-A group of men kicked the doors and broke the mirrors during a fight on the street.,vandalism
-All the tyres were deflated and cut with a knife overnight.,vandalism
-Somebody poured sugar into the fuel tank and damaged the paint with acid.,vandalism
-Protesters jumped on the roof of my car and dented it.,vandalism
-"Tiny crack in the windscreen from a stone, I want it replaced.",glass_only
-Sunroof glass shattered while driving on a bumpy road.,glass_only
-Rear glass broke when a coconut fell from a tree.,glass_only
-"Hailstorm cracked my front glass, there is no dent anywhere.",glass_only
-Door glass shattered on its own in the hot sun.,glass_only
-"A truck threw gravel, only the windscreen has small chips.",glass_only
+text,label,language
+"I was parking and gently touched the pillar. Small dent on the bumper, nothing serious.",collision,en
+"Scooter rider lost balance and fell on my car at the signal, left door dented.",collision,en
+Car slid off the ghat road and rolled into a ditch. Roof and both sides damaged.,collision,en
+"Hit a speed breaker too fast, the oil sump cracked and front bumper scraped the road.",collision,en
+A reversing tipper truck backed into my parked car. Boot and tail lights broken.,collision,en
+"Accident on the flyover, my windshield also cracked but the main damage is the crushed front and bonnet.",collision,en
+Came back from my trip and the car was not in the parking lot. Security has no record.,theft,en
+My car's catalytic converter was cut out and taken in the night.,theft,en
+Somebody broke the window and took my laptop bag and the car stereo.,theft,en
+"Valet never returned my car after the wedding function, police are searching.",theft,en
+Number plates and the fog lamps were removed and taken from the car.,theft,en
+"Gaadi ghar ke bahar se gayab hai, CCTV mein do log dikh rahe hai.",theft,hinglish
+"After the storm, water stood in the parking for two days and the car smells and won't start.",flood,en
+I tried to cross a flooded causeway and the engine hydrolocked.,flood,en
+"Overflowing nala entered the basement, the car's floor and seats were wet up to the seat level.",flood,en
+"Cyclone rain filled the street, car was half submerged, ECU damaged.",flood,en
+"Water entered through the doors when I waited at a waterlogged signal, the electronics failed.",flood,en
+Paani mein gaadi band ho gayi underpass ke andar.,flood,hinglish
+"Burning smell, then flames from the dashboard while the AC was running.",fire,en
+Lightning struck near the car and the wiring burnt.,fire,en
+My car melted when the shop next to the parking caught fire.,fire,en
+"Engine overheated and caught fire on the highway, fire brigade attended.",fire,en
+Someone set my car on fire during the riots last night.,fire,en
+The battery terminals sparked and the bonnet area burnt.,fire,en
+Someone threw a stone at my windshield on purpose after an argument.,vandalism,en
+Found the word 'idiot' scratched on my bonnet this morning.,vandalism,en
+A group of men kicked the doors and broke the mirrors during a fight on the street.,vandalism,en
+All the tyres were deflated and cut with a knife overnight.,vandalism,en
+Somebody poured sugar into the fuel tank and damaged the paint with acid.,vandalism,en
+Protesters jumped on the roof of my car and dented it.,vandalism,en
+"Tiny crack in the windscreen from a stone, I want it replaced.",glass_only,en
+Sunroof glass shattered while driving on a bumpy road.,glass_only,en
+Rear glass broke when a coconut fell from a tree.,glass_only,en
+"Hailstorm cracked my front glass, there is no dent anywhere.",glass_only,en
+Door glass shattered on its own in the hot sun.,glass_only,en
+"A truck threw gravel, only the windscreen has small chips.",glass_only,en

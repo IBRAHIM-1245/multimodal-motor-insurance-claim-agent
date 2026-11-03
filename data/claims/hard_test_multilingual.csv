@@ -1,0 +1,37 @@
+text,label,language
+"चौराहे पर एक ऑटो ने मेरी कार के आगे वाले हिस्से में टक्कर मारी, हेडलाइट फूट गई।",collision,hi
+घाट वाली सड़क पर गाड़ी नाले में गिर गई और पलट गई।,collision,hi
+ఫ్లైఓవర్ మీద ముందు ఉన్న కారు సడెన్‌గా బ్రేక్ వేయడంతో నా కారు దాన్ని గుద్దింది.,collision,te
+పార్కింగ్ నుండి బయటకు తీస్తుంటే పిల్లర్‌కు తగిలి డోర్ సొట్టపోయింది.,collision,te
+"Toll plaza ke paas ek tempo ne meri Creta ko side se ragad diya, mirror aur fender gaye.",collision,hinglish
+Highway meeda oka auto ni tappinchabothe car chettu ki guddindi.,collision,tenglish
+शादी के फंक्शन के बाद वैले मेरी गाड़ी लौटाकर नहीं आया।,theft,hi
+रात को कोई मेरी कार का साइलेंसर काटकर ले गया।,theft,hi
+మాల్ పార్కింగ్ నుండి వచ్చేసరికి నా కారు కనిపించలేదు.,theft,te
+"ఎవరో కారు లోపలి స్క్రీన్, ముందు సీట్లు తీసుకెళ్ళారు.",theft,te
+"Office ke bahar se meri Nexon gayab hai, guard ko kuch pata nahi.",theft,hinglish
+"Raatri evaro na car battery, stepney rendu teeskellaru.",theft,tenglish
+"चक्रवात के बाद गली में कमर तक पानी था, कार का इंजन जाम हो गया।",flood,hi
+झील का पानी कॉलोनी में घुस आया और गाड़ी के अंदर कीचड़ भर गया।,flood,hi
+వాగు పొంగి రోడ్డు మీదకు నీళ్ళు రావడంతో కారు కొట్టుకుపోయి గోడకు తగిలింది.,flood,te
+అపార్ట్‌మెంట్ సెల్లార్ మునిగిపోవడంతో కారు ఈసీయూ పాడైపోయింది.,flood,te
+"Raat bhar baarish hui, subah car ke andar ghutne tak paani tha.",flood,hinglish
+"Cheruvu ponginappudu na car sagam neellalo munigindi, seats tadichipoyayi.",flood,tenglish
+एसी चलाते समय डैशबोर्ड से जलने की बदबू आई और फिर लपटें निकलने लगीं।,fire,hi
+सीएनजी भरवाते समय गाड़ी के पीछे के हिस्से में आग लग गई।,fire,hi
+పిడుగు పడటంతో కారు వైరింగ్ కాలిపోయింది.,fire,te
+ఇంజిన్ బాగా వేడెక్కి హైవే మీదే కారుకు మంటలు అంటుకున్నాయి.,fire,te
+Godown mein aag lagi aur wahan parked meri gaadi bhi pighal gayi.,fire,hinglish
+Battery daggara spark vachi bonnet lopala motham kaalipoyindi.,fire,tenglish
+सुबह देखा तो किसी ने मेरी कार के बोनट पर गाली खरोंच दी थी।,vandalism,hi
+दंगे में भीड़ ने लाठियों से मेरी गाड़ी तोड़ दी।,vandalism,hi
+గొడవలో కొందరు నా కారు అద్దాలు కావాలని పగలగొట్టారు.,vandalism,te
+"రాత్రి ఎవరో కారు టైర్ల గాలి తీసి, కత్తితో కోశారు.",vandalism,te
+"Padosi ke bachchon ne jaan boojh ke meri car pe eent phenki, roof dent ho gayi.",vandalism,hinglish
+"Evaro kaavalani na car meeda acid posaru, paint motham poyindi.",vandalism,tenglish
+धूप में खड़ी कार का दरवाज़े वाला शीशा अपने आप चटक गया।,glass_only,hi
+"नारियल गिरने से पीछे का शीशा टूट गया, बॉडी ठीक है।",glass_only,hi
+సన్‌రూఫ్ అద్దం గతుకుల రోడ్డు మీద పగిలింది.,glass_only,te
+బస్సు నుండి కంకర ఎగిరి విండ్‌షీల్డ్‌కు చిన్న పగుళ్ళు వచ్చాయి.,glass_only,te
+"Sirf windscreen pe crack hai, patthar laga tha, aur kuch nahi hua.",glass_only,hinglish
+"Vadagalla vaana ki mundu addam matrame pagilindi, dent emi ledu.",glass_only,tenglish

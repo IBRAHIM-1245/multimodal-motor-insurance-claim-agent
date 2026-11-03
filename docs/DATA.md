@@ -7,8 +7,9 @@ No real customer, policy or claim data is used (privacy and DPDP Act reasons).
 
 | File | Rows | Used for |
 |---|---|---|
-| `data/claims/claim_descriptions.csv` | 300 | Fine-tuning DistilBERT (50 per claim type) |
-| `data/claims/hard_test_claims.csv` | 36 | Harder hand-written test set (6 per type), never used in training |
+| `data/claims/claim_descriptions.csv` | 482 | Fine-tuning the classifier: 300 English + 182 Hindi / Telugu / Hinglish / Tenglish |
+| `data/claims/hard_test_claims.csv` | 36 | Harder hand-written English test set (6 per type), never used in training |
+| `data/claims/hard_test_multilingual.csv` | 36 | Harder hand-written Hindi / Telugu / Hinglish / Tenglish test set, never used in training |
 | `data/claims/customers.csv` | 60 | Policyholders (fictional names, `@example.com` emails) |
 | `data/claims/vehicles.csv` | 60 | One vehicle per customer: make, model, segment, year, registration |
 | `data/claims/policies.csv` | 60 | Policy type, dates, status, IDV, add-ons |
@@ -16,6 +17,20 @@ No real customer, policy or claim data is used (privacy and DPDP Act reasons).
 | `data/claims/policy_rules.csv` | 6 | Limits and deductibles per claim type (SQL rules) |
 | `data/claims/repair_prices.csv` | 57 | Repair cost per part, car segment and severity |
 | `data/policy_docs/*.pdf` | 4 PDFs | Policy wording for RAG (Pinecone) |
+
+## Languages
+
+Most customers in India do not write claims in English, so the data covers five forms of writing:
+
+| Code | Language | Example |
+|---|---|---|
+| `en` | English | My car was stolen from the parking |
+| `hi` | Hindi (Devanagari script) | मेरी गाड़ी चोरी हो गई |
+| `te` | Telugu (Telugu script) | నా కారు దొంగిలించబడింది |
+| `hinglish` | Hindi in English letters | Meri gaadi chori ho gayi |
+| `tenglish` | Telugu in English letters | Na car dongatanam ayyindi |
+
+Customer replies are written in the customer's language using English letters; adjuster messages and the audit log are always in English.
 
 ## Claim types (labels)
 
@@ -50,5 +65,6 @@ No real customer, policy or claim data is used (privacy and DPDP Act reasons).
 ## Limits of this data
 - Descriptions follow a limited set of writing patterns, so scores on `claim_descriptions.csv` will be optimistic.
   `hard_test_claims.csv` is written differently to give a more honest score.
-- Real claims would include spelling mistakes, regional languages and much longer stories.
+- Hindi and Telugu rows are fewer (6-8 per claim type in each script); other Indian languages (Tamil, Kannada, Marathi...) are not covered yet.
+- Real claims would include spelling mistakes, more regional languages and much longer stories.
   Before real use, the model must be tested and retrained on real, anonymised claims.
