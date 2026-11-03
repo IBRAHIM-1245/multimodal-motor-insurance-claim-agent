@@ -8,6 +8,7 @@ Rule of the design: plain Python rules decide WHAT happens (approve / reject / h
 The LLM only explains the decision in words and never changes it.
 """
 import os
+import re
 from datetime import date, datetime, timedelta
 from typing import Literal, TypedDict
 
@@ -179,11 +180,28 @@ def check_rules(state):
 
 # ---------- Step 5: find the policy clauses that support the decision (RAG, Pinecone) ----------
 def find_policy_clauses(state):
-    question = (f"{state['classification']['claim_type']} claim. " + " ".join(state["reasons"] + state["flags"]))
+    reasons_text = " ".join(state["reasons"] + state["flags"])
+    question = f"{state['classification']['claim_type']} claim. " + reasons_text
     vector = embedder.embed_query(question)
-    result = policy_index.query(vector=vector, top_k=3, namespace="policies", include_metadata=True)
-    clauses = [{"clause": m.metadata["clause"], "section": m.metadata["section"], "text": m.metadata["text"],
-                "score": round(m.score, 3)} for m in result.matches]
+
+    # 1. Exact lookup: sections our rules already named, e.g. "Section 10.2a" -> "10.2"
+    cited = re.findall(r"Section (\d{1,2}\.\d{1,2})", reasons_text)
+    exact = []
+    if cited:
+        exact = policy_index.query(vector=vector, top_k=5, namespace="policies", include_metadata=True,
+                                   filter={"clause": {"$in": cited}}).matches
+
+    # 2. Meaning search: the most similar rules, for extra context
+    similar = policy_index.query(vector=vector, top_k=3, namespace="policies", include_metadata=True).matches
+
+    # 3. Merge: exact rules first, then similar ones, no duplicates, at most 3
+    clauses = []
+    for found_by, matches in [("exact", exact), ("similarity", similar)]:
+        for m in matches:
+            already_added = m.metadata["clause"] in [c["clause"] for c in clauses]
+            if not already_added and len(clauses) < 3:
+                clauses.append({"clause": m.metadata["clause"], "section": m.metadata["section"],
+                                "text": m.metadata["text"], "score": round(m.score, 3), "found_by": found_by})
     return {"clauses": clauses}
 
 
