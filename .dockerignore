@@ -1,0 +1,11 @@
+# Files Docker must NOT copy into the image
+.env
+.git
+data
+training
+eval
+docs
+n8n
+scripts
+**/__pycache__
+*.zip
