@@ -1,0 +1,90 @@
+{
+  "name": "Error Alert - ShaikSure",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "641ce839-50e8-47d4-9d23-46ec68d2ad1b",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn the error details into a short plain-text Telegram alert (underscores removed: Telegram formatting breaks on them)\nconst e = $input.first().json;\nconst clean = text => String(text ?? '').replace(/_/g, ' ');\n\nconst lines = [\n  'ALERT: ShaikSure workflow failed',\n  `Workflow: ${clean(e.workflow?.name)}`,\n  `Failed node: ${clean(e.execution?.lastNodeExecuted)}`,\n  `Error: ${clean(e.execution?.error?.message).slice(0, 300)}`,\n  `Execution ID: ${e.execution?.id}`,\n  `Time: ${new Date().toISOString()}`,\n];\nreturn [{ json: { text: lines.join('\\n') } }];\n"
+      },
+      "id": "d7edc199-7153-4ea1-b0b8-b7864c111cde",
+      "name": "Build Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1667967017",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1a1eeb96-6dc4-4eb8-95de-80789118294b",
+      "name": "Send Alert (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        0
+      ],
+      "webhookId": "54dae945-294a-42bb-bbfb-b45280868563",
+      "credentials": {
+        "telegramApi": {
+          "id": "OjIBqNYh97wpG2ol",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Alert": {
+      "main": [
+        [
+          {
+            "node": "Send Alert (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "792af59a-7a83-4e13-9ef1-d40244947d00",
+  "meta": {
+    "instanceId": "eebd74f076b8a42b2fa670b5e01023718a2751f462b21fb351b16d120b4c3415"
+  },
+  "nodeGroups": [],
+  "id": "qxYhzc5HeLZRQamh",
+  "tags": []
+}
