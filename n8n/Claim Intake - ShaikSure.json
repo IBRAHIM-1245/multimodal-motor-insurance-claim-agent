@@ -1,0 +1,820 @@
+{
+  "name": "Claim Intake - ShaikSure",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ShaikSure Motor Insurance - File a Claim",
+        "formDescription": "Tell us what happened. Upload one photo of the damage. A voice note in English or Hinglish is optional. ShaikSure is a fictional insurer (portfolio project).",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Policy number",
+              "placeholder": "SSM-2026-00001",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Incident date",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What happened?",
+              "fieldType": "textarea",
+              "placeholder": "Describe the incident in English or Hinglish",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Damage photo",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".jpg, .jpeg, .png",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Voice note (optional)",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".mp3, .m4a, .wav, .ogg, .webm"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "path": "shaiksure-claim"
+        }
+      },
+      "id": "d1d94498-84c4-47fd-bd63-915f64d1ba50",
+      "name": "Claim Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        160
+      ],
+      "webhookId": "5d5854cd-122d-4b2c-bb4d-0e11e6967778"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Find the uploaded damage photo, turn it into base64 and build the OpenAI vision request\nconst item = $input.first();\nconst photoKey = Object.keys(item.binary || {}).find(k => k.toLowerCase().includes('photo'));\nif (!photoKey) {\n  throw new Error('No damage photo uploaded');\n}\nconst buffer = await this.helpers.getBinaryDataBuffer(0, photoKey);\nconst mimeType = item.binary[photoKey].mimeType || 'image/jpeg';\nconst description = item.json['What happened?'] || '';\n\n// The part names must match the repair_prices table in Postgres\nconst PARTS = ['front_bumper', 'rear_bumper', 'headlight', 'taillight', 'bonnet', 'front_door', 'rear_door',\n  'side_mirror', 'fender', 'roof', 'boot_lid', 'alloy_wheel', 'radiator', 'windshield', 'rear_windshield',\n  'side_window_glass', 'engine', 'interior_upholstery', 'wiring_harness'];\n\nconst prompt = `You inspect photos for a motor insurance claim. Reply with JSON only, in this shape:\n{\"is_car\": true, \"damaged_parts\": [{\"part\": \"rear_bumper\", \"severity\": \"moderate\"}], \"matches_description\": true, \"summary\": \"one sentence\"}\nRules:\n- is_car: false if the photo does not show a car.\n- part must be one of: ${PARTS.join(', ')}. Ignore anything else.\n- severity: minor = scratch or small dent; moderate = dent or crack that needs repair; severe = crushed, burnt or broken, needs replacement.\n- matches_description: false only if the photo clearly contradicts the customer's description.\n- If no damage is visible (for example the whole car was stolen), return an empty damaged_parts list.`;\n\nreturn [{\n  json: {\n    request_body: {\n      model: 'gpt-4o-mini',\n      temperature: 0,\n      max_tokens: 400,\n      response_format: { type: 'json_object' },\n      messages: [\n        { role: 'system', content: prompt },\n        { role: 'user', content: [\n          { type: 'text', text: 'Customer description: ' + description },\n          { type: 'image_url', image_url: { url: `data:${mimeType};base64,${buffer.toString('base64')}`, detail: 'low' } },\n        ] },\n      ],\n    },\n  },\n}];\n"
+      },
+      "id": "04e0b5c4-7272-4d93-a792-c59859569aed",
+      "name": "Prepare Photo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.request_body) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "6305cfeb-1c3e-430e-a2b9-457abcf761b2",
+      "name": "Analyze Photo (GPT-4o-mini)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1264,
+        48
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "cqWLyZS0jiea5Ex9",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// The voice note is optional: find it (if uploaded) and give it a fixed name \"voice\"\nconst item = $input.first();\nconst voiceKey = Object.keys(item.binary || {}).find(k => k.toLowerCase().includes('voice'));\n\nif (!voiceKey) {\n  return [{ json: { has_voice: false } }];\n}\nreturn [{ json: { has_voice: true }, binary: { voice: item.binary[voiceKey] } }];\n"
+      },
+      "id": "76299c8e-b2e2-4f8b-ac6d-930c5fd9fb04",
+      "name": "Prepare Voice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.has_voice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7ea4ca2e-b867-4b63-bc23-ab05c9d66cdf",
+      "name": "Has Voice Note?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1264,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "voice"
+            },
+            {
+              "name": "model",
+              "value": "whisper-1"
+            },
+            {
+              "name": "prompt",
+              "value": "Motor insurance claim in English or Hinglish. Write Hindi words in English letters."
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "4a5079c7-d9ff-49fc-9eb0-8eae81105c10",
+      "name": "Transcribe Voice (Whisper)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1008,
+        208
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "cqWLyZS0jiea5Ex9",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "text",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3beba4ed-6809-4c9f-ae4b-829392a9922b",
+      "name": "No Voice Note",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1008,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "887c6b53-05db-4ab6-9e45-07c3dcfd367b",
+      "name": "Combine Photo + Voice",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -736,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine the form answers, the photo analysis and the voice transcript into one request for the agent API\nconst form = $('Claim Form').first().json;\nconst merged = $input.first().json;\n\nlet damageReport = {};\ntry {\n  damageReport = JSON.parse(merged.choices[0].message.content);\n} catch (error) {\n  damageReport = {};          // photo analysis failed: the agent still works, without photo details\n}\n\nreturn [{\n  json: {\n    claim_id: 'CLM-' + $execution.id,\n    policy_number: (form['Policy number'] || '').trim().toUpperCase(),\n    description: form['What happened?'] || '',\n    transcript: merged.text || '',\n    damage_report: damageReport,\n    incident_date: form['Incident date'] || '',\n  },\n}];\n"
+      },
+      "id": "ab35719b-9be0-4a2e-aace-6751775c5591",
+      "name": "Build Claim Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -496,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/assess-claim",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "eb621d81-94ec-4d10-9c11-864e00bd0f67",
+      "name": "Assess Claim (Agent API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -256,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Claim received",
+        "completionMessage": "={{ $json.customer_message }}\n\nClaim ID: {{ $json.claim_id }}\nStatus: {{ $json.decision.replace('_', ' ') }}",
+        "options": {}
+      },
+      "id": "ba040647-5e11-4ce9-bf57-3df8f931f317",
+      "name": "Show Decision to Customer",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b558974f-5a48-41d1-b10d-2efa07828bcc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "human_review",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "29cc3e2c-fe4e-47f4-a736-987530bfc90c",
+      "name": "Needs Adjuster?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build a plain-text Telegram message for the claims adjuster (underscores removed: Telegram formatting breaks on them)\nconst result = $input.first().json;\nconst request = $('Build Claim Request').first().json;\nconst clean = text => String(text ?? '').replace(/_/g, ' ');\n\nconst parts = (request.damage_report.damaged_parts || [])\n  .map(p => `${clean(p.part)} (${p.severity})`).join(', ') || 'none';\n\nconst lines = [\n  `ShaikSure claim needs review: ${result.claim_id}`,\n  `Policy: ${request.policy_number}`,\n  `Claim type: ${clean(result.classification?.claim_type)} (${clean(result.classification?.method)})`,\n  `Customer says: ${result.english_text || request.description}`,\n  `Photo damage: ${parts}`,\n  `Estimated cost: Rs ${result.estimated_cost} | Payable: Rs ${result.payable_amount}`,\n  `Flags: ${(result.flags || []).map(clean).join('; ') || 'none'}`,\n  `Policy rules: ${(result.clauses || []).map(c => c.clause).join(', ')}`,\n  `Agent note: ${clean(result.explanation)}`,\n  `Langfuse trace: ${result.trace_id}`,\n];\nreturn [{ json: { message: lines.join('\\n') } }];\n"
+      },
+      "id": "d3dc7179-bf64-4c21-af29-3db79a9e6cb4",
+      "name": "Build Adjuster Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "1667967017",
+        "message": "={{ $json.message }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Approve",
+            "disapproveLabel": "Reject"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "78044671-e030-4c99-b9b8-3dc39cb45ea1",
+      "name": "Ask Adjuster (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        192
+      ],
+      "webhookId": "shaiksure-adjuster-approval",
+      "credentials": {
+        "telegramApi": {
+          "id": "OjIBqNYh97wpG2ol",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// The adjuster pressed Approve or Reject in Telegram\nconst approved = $input.first().json.data?.approved === true;\nreturn [{ json: { final_decision: approved ? 'approve' : 'reject', decided_by: 'adjuster (Telegram)' } }];\n"
+      },
+      "id": "2b73c190-516c-48ff-b24e-a98327c69c71",
+      "name": "Adjuster Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// No human review needed: the agent's decision is final\nreturn [{ json: { final_decision: $input.first().json.decision, decided_by: 'agent' } }];\n"
+      },
+      "id": "b318daee-863d-4fa5-9449-1fed06743f80",
+      "name": "Agent Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One row for the claim_audit table: what the AI decided, what was finally decided, and why\nconst result = $('Assess Claim (Agent API)').first().json;\nconst request = $('Build Claim Request').first().json;\nconst final = $input.first().json;\n\nreturn [{\n  json: {\n    claim_id: result.claim_id,\n    policy_number: request.policy_number,\n    claim_type: result.classification ? result.classification.claim_type : null,\n    ai_decision: result.decision,\n    final_decision: final.final_decision,\n    decided_by: final.decided_by,\n    confidence: result.classification ? result.classification.confidence : null,\n    estimated_cost: result.estimated_cost,\n    payable_amount: final.final_decision === 'reject' ? 0 : result.payable_amount,\n    reasons: (result.reasons || []).join(' | '),\n    flags: (result.flags || []).join(' | '),\n    policy_clauses: (result.clauses || []).map(c => c.clause).join(', '),\n    transcript: request.transcript,\n    damage_report: JSON.stringify(request.damage_report),\n    trace_id: result.trace_id,\n  },\n}];\n"
+      },
+      "id": "caacb07a-6f3c-486a-9aab-13e4f3324818",
+      "name": "Build Audit Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "claim_audit",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "claim_id",
+              "displayName": "claim_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "policy_number",
+              "displayName": "policy_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "claim_type",
+              "displayName": "claim_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ai_decision",
+              "displayName": "ai_decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "final_decision",
+              "displayName": "final_decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "decided_by",
+              "displayName": "decided_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estimated_cost",
+              "displayName": "estimated_cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "payable_amount",
+              "displayName": "payable_amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reasons",
+              "displayName": "reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "flags",
+              "displayName": "flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "policy_clauses",
+              "displayName": "policy_clauses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "transcript",
+              "displayName": "transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "damage_report",
+              "displayName": "damage_report",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "trace_id",
+              "displayName": "trace_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "fe2b32c5-54bb-4c5a-8e2e-8e3c0aa54a63",
+      "name": "Save Audit Log",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1232,
+        288
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "HVzswW3RJQLA44vq",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Claim Form": {
+      "main": [
+        [
+          {
+            "node": "Prepare Photo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Photo": {
+      "main": [
+        [
+          {
+            "node": "Analyze Photo (GPT-4o-mini)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Photo (GPT-4o-mini)": {
+      "main": [
+        [
+          {
+            "node": "Combine Photo + Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Voice": {
+      "main": [
+        [
+          {
+            "node": "Has Voice Note?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Voice Note?": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice (Whisper)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Voice Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice (Whisper)": {
+      "main": [
+        [
+          {
+            "node": "Combine Photo + Voice",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "No Voice Note": {
+      "main": [
+        [
+          {
+            "node": "Combine Photo + Voice",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combine Photo + Voice": {
+      "main": [
+        [
+          {
+            "node": "Build Claim Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Claim Request": {
+      "main": [
+        [
+          {
+            "node": "Assess Claim (Agent API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assess Claim (Agent API)": {
+      "main": [
+        [
+          {
+            "node": "Show Decision to Customer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Needs Adjuster?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Adjuster?": {
+      "main": [
+        [
+          {
+            "node": "Build Adjuster Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agent Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Adjuster Message": {
+      "main": [
+        [
+          {
+            "node": "Ask Adjuster (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Adjuster (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Adjuster Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Adjuster Decision": {
+      "main": [
+        [
+          {
+            "node": "Build Audit Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Decision": {
+      "main": [
+        [
+          {
+            "node": "Build Audit Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Audit Row": {
+      "main": [
+        [
+          {
+            "node": "Save Audit Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f5dd77fe-186e-41c6-8206-4c66f81aff0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eebd74f076b8a42b2fa670b5e01023718a2751f462b21fb351b16d120b4c3415"
+  },
+  "nodeGroups": [],
+  "id": "pX04LXQXWDqyy2jd",
+  "tags": []
+}
