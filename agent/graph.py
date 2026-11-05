@@ -185,24 +185,25 @@ def find_policy_clauses(state):
     question = f"{state['classification']['claim_type']} claim. " + reasons_text
     vector = embedder.embed_query(question)
 
-    # 1. Exact lookup: sections our rules already named, e.g. "Section 10.2a" -> "10.2"
-    cited = re.findall(r"Section (\d{1,2}\.\d{1,2})", reasons_text)
-    exact = []
+    # Sections our rules already named (e.g. "Section 10.2b" -> "10.2"), plus the claim type's own rule (e.g. 3.1)
+    cited = re.findall(r"Section (\d{1,2}\.\d{1,2})", reasons_text + " " + state["rule"]["clause_ref"])
+    cited = list(dict.fromkeys(cited))          # remove duplicates, keep order
+
     if cited:
-        exact = policy_index.query(vector=vector, top_k=5, namespace="policies", include_metadata=True,
-                                   filter={"clause": {"$in": cited}}).matches
+        # Exact lookup: we already know the right sections, so fetch exactly those (no guessing)
+        matches = policy_index.query(vector=vector, top_k=len(cited), namespace="policies", include_metadata=True,
+                                     filter={"clause": {"$in": cited}}).matches
+        found_by = "exact"
+    else:
+        # Fallback: no section known, so search by meaning
+        matches = policy_index.query(vector=vector, top_k=3, namespace="policies", include_metadata=True).matches
+        found_by = "similarity"
 
-    # 2. Meaning search: the most similar rules, for extra context
-    similar = policy_index.query(vector=vector, top_k=3, namespace="policies", include_metadata=True).matches
-
-    # 3. Merge: exact rules first, then similar ones, no duplicates, at most 3
-    clauses = []
-    for found_by, matches in [("exact", exact), ("similarity", similar)]:
-        for m in matches:
-            already_added = m.metadata["clause"] in [c["clause"] for c in clauses]
-            if not already_added and len(clauses) < 3:
-                clauses.append({"clause": m.metadata["clause"], "section": m.metadata["section"],
-                                "text": m.metadata["text"], "score": round(m.score, 3), "found_by": found_by})
+    # Keep the order of 'cited' (most important first)
+    order = {clause: i for i, clause in enumerate(cited)}
+    matches = sorted(matches, key=lambda m: order.get(m.metadata["clause"], 99))
+    clauses = [{"clause": m.metadata["clause"], "section": m.metadata["section"], "text": m.metadata["text"],
+                "score": round(m.score, 3), "found_by": found_by} for m in matches]
     return {"clauses": clauses}
 
 
@@ -226,7 +227,10 @@ Policy clauses (cite only these, by number):
 Write:
 1. explanation: 2-4 sentences in English for the claims adjuster, citing clause numbers.
 2. customer_message: 2-3 polite sentences for the customer in {style}, using English letters only.
-   For human_review say a claims adjuster will review it shortly. Do not promise money for reject or human_review."""
+   - approve: say the claim is approved and state the payable amount. Do NOT mention any adjuster or review.
+   - human_review: say a claims adjuster will review it shortly. Do not promise any money.
+   - reject: explain the reason simply and politely. Do not promise any money.
+   - need_more_info: ask the customer to check the policy number and submit again."""
     result = llm.with_structured_output(Explanation).invoke(prompt)
     return {"explanation": result.explanation, "customer_message": result.customer_message}
 
