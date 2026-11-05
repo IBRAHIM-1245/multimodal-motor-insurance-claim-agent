@@ -1,0 +1,21 @@
+﻿case_id,language,scenario,expected_claim_type,predicted_claim_type,classifier_method,confidence,expected_decision,predicted_decision,type_correct,decision_correct,payable_amount,cited_clauses,trace_id
+E01,en,happy path,collision,collision,fine_tuned_model,0.291,approve,approve,TRUE,TRUE,10800,3.1,159efe8668818a8bbd10378d20c7d906
+E02,hinglish,Hinglish text,collision,collision,fine_tuned_model,0.271,approve,approve,TRUE,TRUE,7500,3.1,d291eca1a5754e8ed5ff429859a58ebe
+E03,hinglish,"Hinglish voice note, parts theft",theft,theft,gpt_fallback,0.211,approve,approve,TRUE,TRUE,36000,3.2,50f847e71097986b2f3dce1c031a077a
+E04,en,"flood, no engine damage",flood,flood,fine_tuned_model,0.285,approve,approve,TRUE,TRUE,18400,3.3,22859f37f1c61d03938423730579f00d
+E05,en,engine excluded: no Engine Protect (7.5),flood,flood,fine_tuned_model,0.285,approve,approve,TRUE,TRUE,10000,"7.5, 3.3",7ce2ede9bb722bbfcfc45972b1f4e471
+E06,en,"English voice note, Engine Protect, high value",flood,flood,fine_tuned_model,0.284,human_review,human_review,TRUE,TRUE,235000,"10.2, 3.3",8fe02d793ac10ff4815993a1672462d8
+E07,en,"fire, small loss",fire,fire,fine_tuned_model,0.295,approve,approve,TRUE,TRUE,13600,3.4,39c8de53ae0bb029213eb1503603e46b
+E08,en,vandalism,vandalism,vandalism,gpt_fallback,0.212,approve,approve,TRUE,TRUE,16500,3.5,d3fa039e07700aeffb6c116e3d153712
+E09,en,glass only,glass_only,glass_only,gpt_fallback,0.225,approve,approve,TRUE,TRUE,9000,3.6,c685ef9ef52ae7328cfc12dbacc333f1
+E10,hinglish,Hinglish glass,glass_only,glass_only,gpt_fallback,0.223,approve,approve,TRUE,TRUE,15600,3.6,f18f93aa18a0354c7bfdc35a4e4c5529
+E11,en,Third Party Only policy (2.3),collision,collision,fine_tuned_model,0.286,reject,reject,TRUE,TRUE,0,"2.3, 3.1",bd08ca78682fdce0ec554f0d5194389f
+E12,hinglish,"Third Party Only, Hinglish",collision,collision,fine_tuned_model,0.29,reject,reject,TRUE,TRUE,0,"2.3, 3.1",a44edaf34a389715105d2a503003ca9a
+E13,en,expired policy (7.10),collision,collision,fine_tuned_model,0.291,reject,reject,TRUE,TRUE,0,"7.10, 3.1",a58d363d29b4983792f9d7e3d5b4b4e9
+E14,en,expired + Third Party Only,vandalism,vandalism,gpt_fallback,0.211,reject,reject,TRUE,TRUE,0,"2.3, 7.10, 3.5",a143c7468ad767550212afb5dc34b33d
+E15,en,policy started 12 days ago (10.2b),collision,collision,fine_tuned_model,0.291,human_review,human_review,TRUE,TRUE,11000,"10.2, 3.1",7c79cc3d6b28e0683b7da24343a22025
+E16,en,3 claims in 12 months (10.2c),collision,collision,fine_tuned_model,0.283,human_review,human_review,TRUE,TRUE,4400,"10.2, 3.1",d2737086e43f9a24ebd6c16368fad4f5
+E17,en,"high value above Rs 50,000 (10.2a)",collision,collision,fine_tuned_model,0.29,human_review,human_review,TRUE,TRUE,73200,"10.2, 3.1",53c4d18058ff9bcfd16001089d889905
+E18,en,photo is not a car (10.2d),collision,collision,fine_tuned_model,0.276,human_review,human_review,TRUE,TRUE,0,"10.2, 3.1",d08ed97d6f08dbf103ac7dfae7272f85
+E19,en,photo does not match story (10.2d),glass_only,collision,gpt_fallback,0.224,human_review,human_review,FALSE,TRUE,39600,"10.2, 3.1",d9cb58187192f913980968da295fa521
+E20,en,unknown policy number,collision,collision,fine_tuned_model,0.283,need_more_info,need_more_info,TRUE,TRUE,,,2f9916d32d623e9e7c1be4b486181483

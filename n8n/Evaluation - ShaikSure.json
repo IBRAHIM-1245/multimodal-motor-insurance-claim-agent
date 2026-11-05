@@ -1,0 +1,210 @@
+{
+  "name": "Evaluation - ShaikSure",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a44f7c82-a0fb-4439-b22c-496325830ce8",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/IBRAHIM-1245/multimodal-motor-insurance-claim-agent/main/eval/test_claims.csv",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "67312001-9e80-4384-993f-c084aa792272",
+      "name": "Download Test Claims",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1120,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8cb3212f-091d-45c8-b873-43fe3048edb9",
+      "name": "Read CSV",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn each CSV row into a request for the agent API, and keep the expected answers for scoring\nreturn $input.all().map(item => {\n  const row = item.json;\n  return {\n    json: {\n      case_id: row.case_id,\n      language: row.language,\n      scenario: row.scenario,\n      expected_claim_type: row.expected_claim_type,\n      expected_decision: row.expected_decision,\n      request: {\n        claim_id: 'EVAL-' + row.case_id,\n        policy_number: row.policy_number,\n        description: row.description,\n        transcript: row.transcript || '',\n        damage_report: JSON.parse(row.damage_report),\n        incident_date: '2026-11-04',          // fixed date, so results are repeatable\n      },\n    },\n  };\n});\n"
+      },
+      "id": "71eee50d-d209-48b1-b665-1c40ef76dbd5",
+      "name": "Build Requests",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/assess-claim",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.request) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "1b5d8ffd-f4ca-4a35-94db-f82a2ed758a2",
+      "name": "Assess Claim (Agent API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -464,
+        112
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compare each agent answer with the expected answer (results come back in the same order as the requests)\nconst cases = $('Build Requests').all();\n\nreturn $input.all().map((item, i) => {\n  const expected = cases[i].json;\n  const result = item.json;\n  const predictedType = result.classification ? result.classification.claim_type : '';\n  return {\n    json: {\n      case_id: expected.case_id,\n      language: expected.language,\n      scenario: expected.scenario,\n      expected_claim_type: expected.expected_claim_type,\n      predicted_claim_type: predictedType,\n      classifier_method: result.classification ? result.classification.method : '',\n      confidence: result.classification ? result.classification.confidence : '',\n      expected_decision: expected.expected_decision,\n      predicted_decision: result.decision || 'error',\n      type_correct: predictedType === expected.expected_claim_type,\n      decision_correct: result.decision === expected.expected_decision,\n      payable_amount: result.payable_amount,\n      cited_clauses: (result.clauses || []).map(c => c.clause).join(', '),\n      trace_id: result.trace_id || '',\n    },\n  };\n});\n"
+      },
+      "id": "3fe7cc74-c497-428f-90fe-1f9b993cf3b8",
+      "name": "Score Each Case",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One summary of the whole evaluation\nconst rows = $input.all().map(item => item.json);\nconst percent = (part, total) => total ? Math.round(part / total * 1000) / 10 : 0;\nconst count = (list, test) => list.filter(test).length;\n\nconst typed = rows.filter(r => r.expected_decision !== 'need_more_info');   // unknown policy has no claim type check\nconst english = rows.filter(r => r.language === 'en');\nconst hinglish = rows.filter(r => r.language === 'hinglish');\n\nreturn [{\n  json: {\n    total_cases: rows.length,\n    decision_accuracy_percent: percent(count(rows, r => r.decision_correct), rows.length),\n    claim_type_accuracy_percent: percent(count(typed, r => r.type_correct), typed.length),\n    english_decision_accuracy_percent: percent(count(english, r => r.decision_correct), english.length),\n    hinglish_decision_accuracy_percent: percent(count(hinglish, r => r.decision_correct), hinglish.length),\n    handled_by_fine_tuned_model: count(rows, r => r.classifier_method === 'fine_tuned_model'),\n    handled_by_gpt_fallback: count(rows, r => r.classifier_method === 'gpt_fallback'),\n    wrong_cases: rows.filter(r => !r.decision_correct || (r.expected_decision !== 'need_more_info' && !r.type_correct))\n                     .map(r => `${r.case_id}: expected ${r.expected_decision}/${r.expected_claim_type}, got ${r.predicted_decision}/${r.predicted_claim_type}`),\n  },\n}];\n"
+      },
+      "id": "e0910309-9529-4a5c-ba7f-10911415168d",
+      "name": "Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "eval_results.csv"
+        }
+      },
+      "id": "6fd5f082-cdde-4ff7-95db-79bf9b89d172",
+      "name": "Results CSV",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Download Test Claims",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Test Claims": {
+      "main": [
+        [
+          {
+            "node": "Read CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read CSV": {
+      "main": [
+        [
+          {
+            "node": "Build Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Requests": {
+      "main": [
+        [
+          {
+            "node": "Assess Claim (Agent API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assess Claim (Agent API)": {
+      "main": [
+        [
+          {
+            "node": "Score Each Case",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Each Case": {
+      "main": [
+        [
+          {
+            "node": "Summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Results CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "236613bd-7cc2-461a-9774-35f6bcc270ff",
+  "meta": {
+    "instanceId": "eebd74f076b8a42b2fa670b5e01023718a2751f462b21fb351b16d120b4c3415"
+  },
+  "nodeGroups": [],
+  "id": "VqHTNh3CiikoYq96",
+  "tags": []
+}
